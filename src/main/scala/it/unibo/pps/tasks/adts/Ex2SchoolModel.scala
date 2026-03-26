@@ -1,6 +1,9 @@
 package it.unibo.pps.tasks.adts
 
-import it.unibo.pps.u03.extensionmethods.Sequences.Sequence, Sequence.*
+import it.unibo.pps.u03.extensionmethods.Sequences.Sequence
+import Sequence.*
+
+import scala.annotation.tailrec
 
 /*  Exercise 2: 
  *  Implement the below trait, and write a meaningful test.
@@ -112,21 +115,39 @@ object SchoolModel:
        */
       def hasCourse(name: String): Boolean
   object BasicSchoolModule extends SchoolModule:
-    override type School = Nothing
-    override type Teacher = Nothing
-    override type Course = Nothing
 
-    def teacher(name: String): Teacher = ???
-    def course(name: String): Course = ???
-    def emptySchool: School = ???
+    case class TeacherImpl(name: String)
+    case class SchoolImpl(courseList: Sequence[Course], teacherList: Sequence[Teacher], teacherToCourses: Sequence[(Teacher, Course)])
+    case class CourseImpl(name: String)
+
+    override type School = SchoolImpl
+    override type Teacher = TeacherImpl
+    override type Course = CourseImpl
+
+    def teacher(name: String): Teacher = TeacherImpl(name)
+    def course(name: String): Course = CourseImpl(name)
+    def emptySchool: School = SchoolImpl(Nil(), Nil(), Nil())
 
     extension (school: School)
-      def courses: Sequence[String] = ???
-      def teachers: Sequence[String] = ???
-      def setTeacherToCourse(teacher: Teacher, course: Course): School = ???
-      def coursesOfATeacher(teacher: Teacher): Sequence[Course] = ???
-      def hasTeacher(name: String): Boolean = ???
-      def hasCourse(name: String): Boolean = ???
+
+      def distinct[A](s: Sequence[A]): Sequence[A] = s match
+        case Nil() => Nil()
+        case Cons(h, t) => Cons(h, distinct(t.filter(h2 => h2 != h)))
+
+//      def courses: Sequence[String] =
+//        def _courses(seq: Sequence[Course]): Sequence[String] = seq match
+//          case Nil() => Nil()
+//          case Cons(h, t) => Cons(h.name, _courses(t))
+//        _courses(school.courses)
+      def courses: Sequence[String] = distinct(school.courseList.map(c => c.name))
+      def teachers: Sequence[String] = distinct(school.teacherList.map(t => t.name))
+
+      def setTeacherToCourse(teacher: Teacher, course: Course): School = SchoolImpl(Cons(course, school.courseList), Cons(teacher, school.teacherList), Cons((teacher, course), school.teacherToCourses))
+      def coursesOfATeacher(teacher: Teacher): Sequence[Course] = distinct(school.teacherToCourses.filter((t,c) => t == teacher).map((_,c) => c))
+
+      //def hasTeacher(name: String): Boolean = if Nil() == school.teachers.filter(t => t.name == name) then false else true
+      def hasTeacher(name: String): Boolean = school.teacherList.filter(t => t.name == name) != Nil()
+      def hasCourse(name: String): Boolean = school.courseList.filter(c => c.name == name) != Nil()
 @main def examples(): Unit =
   import SchoolModel.BasicSchoolModule.*
   val school = emptySchool

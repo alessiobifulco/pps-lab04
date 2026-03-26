@@ -2,12 +2,12 @@ package it.unibo.pps.tasks.adts
 
 import org.junit.*
 import org.junit.Assert.*
-import Ex1ComplexNumbers.*
+import Ex1ComplexNumber.*
 
 /* Tests should be clear, but note they are expressed independently of the 
    specific implementation  -- UNCOMMENT FOR THE EXERCISE!
 */
-class ComplexTest:
+class ComplexNumberTests:
 
   // Choice of implementation to test
   val complexADT: ComplexADT = BasicComplexADT

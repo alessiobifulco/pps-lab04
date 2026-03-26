@@ -2,15 +2,15 @@ package it.unibo.pps.tasks.adts
 
 import org.junit.*
 import org.junit.Assert.*
-import Ex3Stacks.StackImpl
+import Ex3Stack.StackImpl
 import it.unibo.pps.u03.Sequences.Sequence
 import it.unibo.pps.u03.Optionals.Optional
 
 /* Tests should be clear, but note they are expressed independently of the 
    specific implementation -- UNCOMMENT FOR THE EXERCISE! 
 */
-/**
-class Stacktest:
+
+class StackTest:
 
 
   val stack = StackImpl
@@ -37,4 +37,3 @@ class Stacktest:
     val popResult = stack.pop()
     assertEquals(Optional.Just((20, empty[Int].push(10))), popResult)
 
-**/
