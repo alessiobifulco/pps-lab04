@@ -1,6 +1,9 @@
 package it.unibo.pps.tasks.typeclasses
 
-import it.unibo.pps.u03.Sequences.Sequence, Sequence.*
+import it.unibo.pps.u03.Sequences.Sequence
+import Sequence.*
+
+import scala.annotation.tailrec
 
 /*  Exercise 4: 
  *  - Complete the implementation of ad-hoc polymorphic sumAll, using summable.sum and summable.zero
@@ -18,22 +21,34 @@ object Ex4Summables:
     def sum(a1: A, a2: A): A
     def zero: A
 
+  @tailrec
+  def foldLeft[A,B](acc: B)(f: (B, A) => B)(seq: Sequence[A]): B = seq match
+    case Cons(h, t) => foldLeft(f(acc, h))(f)(t)
+    case Nil() => acc
+
   def sumAll[A: Summable](seq: Sequence[A]) =
     val summable = summon[Summable[A]]
-    ???  // complete here
+    foldLeft(summable.zero)(summable.sum)(seq)
 
   given Summable[Int] with
     def sum(a1: Int, a2: Int): Int = a1 + a2
     def zero: Int = 0
   
   // write givens for Summable[Double] and Summable[String]
+  given Summable[Double] with
+    def sum(a1: Double, a2: Double): Double = a1 + a2
+    def zero: Double = 0.0
+
+  given Summable[String] with
+    def sum(a1: String, a2: String): String = a1 + a2
+    def zero: String = ""
+
 
   @main def trySummables =
     val si = Cons(10, Cons(20, Cons(30, Nil())))  
     println:
       sumAllInt(si) // 60
 
-    /* uncomment from here   
 
     println:
       sumAll(si) // 60
@@ -46,5 +61,5 @@ object Ex4Summables:
     println:
       sumAll(ss) // "102030"
 
-    */  
+
 
